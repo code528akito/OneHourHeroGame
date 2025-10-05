@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { apiClient } from '@/api/client'
-import { Achievement, UserAchievement } from '@/types'
+import type { Achievement, UserAchievement } from '@/types'
 
 interface AchievementWithStatus extends Achievement {
   unlocked: boolean
@@ -20,16 +20,17 @@ export default function AchievementsView() {
     setLoading(true)
     setError(null)
     try {
-      const [allAchievements, myAchievements] = await Promise.all([
+      const [allAchievements, myAchievements]: [Achievement[], UserAchievement[]] = await Promise.all([
         apiClient.getAllAchievements(),
         apiClient.getMyAchievements(),
       ])
 
+      // myAchievements is UserAchievement[] now
       const myAchievementIds = new Set<string>(
-        myAchievements.map((ua: UserAchievement) => ua.achievement_id)
+        myAchievements.map((ua) => ua.achievement_id)
       )
       const myAchievementMap = new Map<string, string>(
-        myAchievements.map((ua: UserAchievement) => [ua.achievement_id, ua.unlocked_at])
+        myAchievements.map((ua) => [ua.achievement_id, ua.unlocked_at])
       )
 
       const achievementsWithStatus: AchievementWithStatus[] = allAchievements.map(achievement => ({

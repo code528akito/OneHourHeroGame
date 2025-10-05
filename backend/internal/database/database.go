@@ -33,7 +33,7 @@ func Connect() error {
 
 func Migrate() error {
 	log.Println("Running database migrations...")
-	
+
 	err := DB.AutoMigrate(
 		&models.User{},
 		&models.PlayerProfile{},

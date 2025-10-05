@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { apiClient } from '@/api/client'
 import { Score, TimeMode } from '@/types'
 import { useGameStore } from '@/stores/gameStore'
@@ -18,11 +18,7 @@ export default function LeaderboardView() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadLeaderboard()
-  }, [selectedMode])
-
-  const loadLeaderboard = async () => {
+  const loadLeaderboard = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -34,7 +30,11 @@ export default function LeaderboardView() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedMode])
+
+  useEffect(() => {
+    loadLeaderboard()
+  }, [selectedMode, loadLeaderboard])
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)

@@ -40,7 +40,6 @@ export interface MonsterStats {
 
 export class Monster {
   private position: Vector2
-  private velocity: Vector2 = { x: 0, y: 0 }
   private type: MonsterType
   private stats: MonsterStats
   private sprite: Sprite

@@ -5,7 +5,7 @@ import { MapSystem, Camera } from './MapSystem'
 import { ScoreSystem, GameResult } from './ScoreSystem'
 import { EffectSystem } from './EffectSystem'
 import { Player } from '@/models/Player'
-import { Monster, MonsterType } from '@/models/Monster'
+import { Monster } from '@/models/Monster'
 import { ItemType, EquipmentType } from '@/models/Item'
 import { NPC, Monument } from '@/models/NPC'
 
@@ -424,15 +424,15 @@ export class GameEngine {
           this.ctx.fillStyle = '#ffffff'
           this.ctx.font = '10px monospace'
           this.ctx.textAlign = 'center'
-          const itemSystem = this.player.getItemSystem()
-          const equipData = itemSystem.getEquipmentData(item.type as EquipmentType)
+          const itemSystem = this.player?.getItemSystem()
+          const equipData = itemSystem?.getEquipmentData(item.type as EquipmentType)
           if (equipData) {
             this.ctx.fillText(equipData.name, screenX, screenY - 18)
           }
         } else {
           // 消費アイテム（色付きの箱）
-          const itemSystem = this.player.getItemSystem()
-          const itemData = itemSystem.getItemData(item.type as ItemType)
+          const itemSystem = this.player?.getItemSystem()
+          const itemData = itemSystem?.getItemData(item.type as ItemType)
           
           if (itemData) {
             this.ctx.fillStyle = itemData.color

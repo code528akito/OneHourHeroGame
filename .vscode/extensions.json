@@ -1,0 +1,21 @@
+{
+  "recommendations": [
+    // Go
+    "golang.go",
+    
+    // TypeScript/React
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    
+    // Docker
+    "ms-azuretools.vscode-docker",
+    
+    // Database
+    "ckolkman.vscode-postgres",
+    
+    // General
+    "editorconfig.editorconfig",
+    "eamodio.gitlens",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}

@@ -62,7 +62,7 @@ test-e2e-ui: ## Run E2E tests with Playwright UI
 
 lint: ## Run linters
 	@echo "Linting backend..."
-	docker-compose -f docker-compose.dev.yml exec backend golangci-lint run || true
+	docker-compose -f docker-compose.dev.yml exec backend golangci-lint run --config .golangci.yml || true
 	@echo "Linting frontend..."
 	docker-compose -f docker-compose.dev.yml exec frontend npm run lint
 
@@ -71,6 +71,29 @@ lint-fix: ## Fix linting issues
 	docker-compose -f docker-compose.dev.yml exec backend sh -c "gofmt -w . && go mod tidy"
 	@echo "Fixing frontend linting issues..."
 	docker-compose -f docker-compose.dev.yml exec frontend npm run lint:fix
+	docker-compose -f docker-compose.dev.yml exec frontend npm run format
+
+type-check: ## Run TypeScript type checking
+	@echo "Type checking frontend..."
+	docker-compose -f docker-compose.dev.yml exec frontend npm run type-check
+
+security-check: ## Run security checks
+	@echo "Running security checks..."
+	@echo "Backend: gosec"
+	docker-compose -f docker-compose.dev.yml exec backend gosec ./... || true
+	@echo "Frontend: npm audit"
+	docker-compose -f docker-compose.dev.yml exec frontend npm audit || true
+
+deps-check: ## Check and update dependencies
+	@echo "Checking Go dependencies..."
+	docker-compose -f docker-compose.dev.yml exec backend go mod tidy
+	docker-compose -f docker-compose.dev.yml exec backend go mod verify
+	@echo "Checking Node dependencies..."
+	docker-compose -f docker-compose.dev.yml exec frontend npm audit fix || true
+
+quality: lint type-check security-check ## Run all quality checks
+
+ci: quality test ## Run CI pipeline (quality + tests)
 
 docker-up: ## Start production Docker containers
 	docker-compose up -d

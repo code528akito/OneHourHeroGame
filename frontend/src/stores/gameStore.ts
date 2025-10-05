@@ -5,7 +5,6 @@ import type {
   PlayerProfile,
   GameState,
   TimeMode,
-  Score,
   Achievement,
   GameResult,
 } from '@/types'
@@ -54,8 +53,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
       set({ user: response.user, token: response.token })
       await get().loadProfile()
       set({ isLoading: false })
-    } catch (error: any) {
-      set({ error: error.response?.data?.error || 'ログインに失敗しました', isLoading: false })
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } }
+      set({ error: err.response?.data?.error || 'ログインに失敗しました', isLoading: false })
       throw error
     }
   },
@@ -68,9 +68,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
       set({ user: response.user, token: response.token })
       await get().loadProfile()
       set({ isLoading: false })
-    } catch (error: any) {
+    } catch (error) {
+      const err = error as { response?: { data?: { error?: string } } }
       set({
-        error: error.response?.data?.error || '登録に失敗しました',
+        error: err.response?.data?.error || '登録に失敗しました',
         isLoading: false,
       })
       throw error

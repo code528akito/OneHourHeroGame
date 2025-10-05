@@ -1,0 +1,18 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+build
+.cache
+
+# Config files
+vite.config.ts
+tailwind.config.js
+postcss.config.js
+
+# Test coverage
+coverage
+
+# Misc
+*.log

@@ -14,10 +14,10 @@ type User struct {
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 
-	Profile       *PlayerProfile     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"profile,omitempty"`
-	Scores        []Score            `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"scores,omitempty"`
-	Achievements  []UserAchievement  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"achievements,omitempty"`
-	Settings      *UserSettings      `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"settings,omitempty"`
+	Profile      *PlayerProfile    `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"profile,omitempty"`
+	Scores       []Score           `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"scores,omitempty"`
+	Achievements []UserAchievement `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"achievements,omitempty"`
+	Settings     *UserSettings     `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"settings,omitempty"`
 }
 
 type PlayerProfile struct {

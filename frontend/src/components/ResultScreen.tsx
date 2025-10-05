@@ -95,7 +95,7 @@ export default function ResultScreen({ result, onClose }: ResultScreenProps) {
 
       // 実績チェックと解放
       await checkAndUnlockAchievements()
-    } catch (error: any) {
+    } catch (error) {
       console.error('✗ Failed to save score:', error)
       
       // リクエストが失敗した場合は再試行を許可
@@ -103,21 +103,22 @@ export default function ResultScreen({ result, onClose }: ResultScreenProps) {
       
       // エラーメッセージを抽出
       let errorMessage = 'スコアの保存に失敗しました'
-      if (error.response) {
-        const data = error.response.data
+      const err = error as { response?: { data?: { error?: string; details?: string }; status?: number }; request?: unknown; message?: string }
+      if (err.response) {
+        const data = err.response.data
         if (data?.error) {
           errorMessage = `${data.error}`
         }
         if (data?.details) {
           errorMessage += `\n詳細: ${data.details}`
         }
-        if (error.response.status) {
-          errorMessage += `\n[ステータスコード: ${error.response.status}]`
+        if (err.response.status) {
+          errorMessage += `\n[ステータスコード: ${err.response.status}]`
         }
-      } else if (error.request) {
+      } else if (err.request) {
         errorMessage = 'サーバーに接続できませんでした。ネットワーク接続を確認してください。'
-      } else if (error.message) {
-        errorMessage = error.message
+      } else if (err.message) {
+        errorMessage = err.message
       }
       
       setSaveError(errorMessage)

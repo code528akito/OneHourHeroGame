@@ -1,5 +1,12 @@
 import axios, { AxiosInstance } from 'axios'
-import type { AuthResponse, PlayerProfile, Score, Achievement, UserSettings } from '@/types'
+import type {
+  AuthResponse,
+  PlayerProfile,
+  Score,
+  Achievement,
+  UserAchievement,
+  UserSettings,
+} from '@/types'
 
 class GameAPIClient {
   private axios: AxiosInstance
@@ -83,7 +90,7 @@ class GameAPIClient {
     return response.data
   }
 
-  async getMyAchievements(): Promise<Achievement[]> {
+  async getMyAchievements(): Promise<UserAchievement[]> {
     const response = await this.axios.get('/achievements/my')
     return response.data
   }

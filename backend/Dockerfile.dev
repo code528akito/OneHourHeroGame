@@ -4,7 +4,10 @@ FROM golang:1.22-alpine
 WORKDIR /app
 
 # 開発ツールのインストール
-RUN apk add --no-cache git gcc musl-dev
+RUN apk add --no-cache git gcc musl-dev curl
+
+# golangci-lintのインストール（gosecを含む）
+RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b /usr/local/bin v1.55.2
 
 # Go modulesを有効化
 ENV GO111MODULE=on

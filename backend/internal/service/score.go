@@ -32,7 +32,7 @@ func (s *ScoreService) SaveScore(userID uuid.UUID, req *SaveScoreRequest) (*mode
 	err := database.DB.Where("user_id = ? AND time_mode = ? AND score = ? AND created_at > ?",
 		userID, req.TimeMode, req.Score, time.Now().Add(-10*time.Second)).
 		First(&recentScore).Error
-	
+
 	if err == nil {
 		// 重複スコアが見つかった
 		return nil, fmt.Errorf("同じスコアを短時間に複数回保存することはできません（10秒間隔を空けてください）")
@@ -60,11 +60,11 @@ func (s *ScoreService) SaveScore(userID uuid.UUID, req *SaveScoreRequest) (*mode
 func (s *ScoreService) GetMyScores(userID uuid.UUID, timeMode string) ([]models.Score, error) {
 	var scores []models.Score
 	query := database.DB.Where("user_id = ?", userID)
-	
+
 	if timeMode != "" {
 		query = query.Where("time_mode = ?", timeMode)
 	}
-	
+
 	if err := query.Order("score DESC").Limit(10).Find(&scores).Error; err != nil {
 		return nil, fmt.Errorf("スコアの取得に失敗しました: %w", err)
 	}

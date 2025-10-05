@@ -23,7 +23,7 @@ func TestAuthHandler_GetMe(t *testing.T) {
 	t.Run("Success with user context", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/me", nil)
-		
+
 		// Create a new router with middleware to set user context
 		router := gin.Default()
 		router.GET("/me", func(c *gin.Context) {
@@ -31,11 +31,11 @@ func TestAuthHandler_GetMe(t *testing.T) {
 			c.Set("username", "testuser")
 			handler.GetMe(c)
 		})
-		
+
 		router.ServeHTTP(w, req)
 
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		var response map[string]interface{}
 		err := json.Unmarshal(w.Body.Bytes(), &response)
 		assert.NoError(t, err)

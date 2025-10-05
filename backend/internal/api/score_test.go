@@ -60,7 +60,7 @@ func TestScoreHandler_GetMyScores_Unauthorized(t *testing.T) {
 
 func TestScoreHandler_GetBestScore(t *testing.T) {
 	handler := NewScoreHandler()
-	
+
 	t.Run("Unauthorized without user context", func(t *testing.T) {
 		router := gin.Default()
 		router.GET("/best-score", handler.GetBestScore)
@@ -77,7 +77,7 @@ func TestScoreHandler_GetBestScore(t *testing.T) {
 			c.Set("userID", uuid.New())
 			handler.GetBestScore(c)
 		})
-		
+
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("GET", "/best-score", nil)
 		router.ServeHTTP(w, req)

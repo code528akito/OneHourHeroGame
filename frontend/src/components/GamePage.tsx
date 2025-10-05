@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGameStore } from '@/stores/gameStore'
 import { GameEngine } from '@/systems/GameEngine'
 import { GameResult } from '@/systems/ScoreSystem'
-import { ItemType } from '@/models/Item'
-import { SkillType } from '@/models/Skill'
+import { ItemInstance, ItemType, ItemData } from '@/models/Item'
+import { SkillInstance, SkillType, SkillData } from '@/models/Skill'
 import { NPC, Monument, Dialog } from '@/models/NPC'
 import TimerDisplay from './TimerDisplay'
 import GameHUD from './GameHUD'
@@ -16,7 +16,7 @@ import { DialogUI, MonumentUI } from './DialogUI'
 export default function GamePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const gameEngineRef = useRef<GameEngine | null>(null)
-  const { timeMode, classType, setGameState } = useGameStore()
+  const { timeMode, classType } = useGameStore()
   const navigate = useNavigate()
 
   const [timer, setTimer] = useState('00:00')
@@ -31,15 +31,27 @@ export default function GamePage() {
     maxExp: 100,
     classType: classType || 'KNIGHT',
   })
-  const [items, setItems] = useState<any[]>([])
-  const [itemDataMap, setItemDataMap] = useState<Map<ItemType, any>>(new Map())
-  const [skills, setSkills] = useState<any[]>([])
-  const [skillDataMap, setSkillDataMap] = useState<Map<SkillType, any>>(new Map())
+  const [items, setItems] = useState<ItemInstance[]>([])
+  const [itemDataMap, setItemDataMap] = useState<Map<ItemType, ItemData>>(new Map())
+  const [skills, setSkills] = useState<SkillInstance[]>([])
+  const [skillDataMap, setSkillDataMap] = useState<Map<SkillType, SkillData>>(new Map())
 
   // NPC会話と石碑調査の状態
   const [activeNPC, setActiveNPC] = useState<NPC | null>(null)
   const [activeMonument, setActiveMonument] = useState<Monument | null>(null)
   const [currentDialog, setCurrentDialog] = useState<Dialog | null>(null)
+
+  const togglePause = useCallback(() => {
+    if (!gameEngineRef.current) return
+
+    if (isPaused) {
+      gameEngineRef.current.resumeGame()
+      setIsPaused(false)
+    } else {
+      gameEngineRef.current.pauseGame()
+      setIsPaused(true)
+    }
+  }, [isPaused])
 
   useEffect(() => {
     if (!timeMode) {
@@ -146,25 +158,12 @@ export default function GamePage() {
         }
       }
     }
-  }, [timeMode, navigate])
-
-  const togglePause = () => {
-    if (!gameEngineRef.current) return
-
-    if (isPaused) {
-      gameEngineRef.current.resumeGame()
-      setIsPaused(false)
-    } else {
-      gameEngineRef.current.pauseGame()
-      setIsPaused(true)
-    }
-  }
+  }, [timeMode, navigate, classType, togglePause])
 
   const handleBackToMenu = () => {
     if (gameEngineRef.current) {
       gameEngineRef.current.stopGame()
     }
-    setGameState('TITLE_SCREEN')
     navigate('/menu')
   }
 

@@ -10,19 +10,19 @@ describe('TimerDisplay Component', () => {
   });
 
   it('shows green color when progress is high', () => {
-    const { container } = render(<TimerDisplay formattedTime="01:30" progress={90} />);
+    render(<TimerDisplay formattedTime="01:30" progress={90} />);
     const timeElement = screen.getByText('01:30');
     expect(timeElement).toHaveClass('text-green-500');
   });
 
   it('shows yellow color when progress is medium', () => {
-    const { container } = render(<TimerDisplay formattedTime="00:45" progress={40} />);
+    render(<TimerDisplay formattedTime="00:45" progress={40} />);
     const timeElement = screen.getByText('00:45');
     expect(timeElement).toHaveClass('text-yellow-500');
   });
 
   it('shows red color and pulse animation when progress is low', () => {
-    const { container } = render(<TimerDisplay formattedTime="00:10" progress={10} />);
+    render(<TimerDisplay formattedTime="00:10" progress={10} />);
     const timeElement = screen.getByText('00:10');
     expect(timeElement).toHaveClass('text-red-500');
     expect(timeElement).toHaveClass('animate-pulse');

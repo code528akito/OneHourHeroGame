@@ -128,7 +128,7 @@ export class Sprite {
 }
 
 export class SpriteFactory {
-  static createPlayerSprite(classType: string): Sprite {
+  static createPlayerSprite(_classType: string): Sprite {
     const sprite = new Sprite()
 
     const idleFrames: SpriteFrame[] = [{ x: 0, y: 0, width: 32, height: 32 }]
@@ -158,7 +158,7 @@ export class SpriteFactory {
     return sprite
   }
 
-  static createMonsterSprite(monsterType: string): Sprite {
+  static createMonsterSprite(_monsterType: string): Sprite {
     const sprite = new Sprite()
 
     const idleFrames: SpriteFrame[] = [{ x: 0, y: 0, width: 32, height: 32 }]

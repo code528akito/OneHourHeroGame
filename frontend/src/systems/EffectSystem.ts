@@ -16,7 +16,7 @@ export interface Effect {
   position: Vector2
   lifetime: number
   maxLifetime: number
-  data?: any
+  data?: Record<string, unknown>
 }
 
 // ダメージテキストエフェクト
@@ -150,7 +150,7 @@ export class EffectSystem {
     effect: DamageTextEffect,
     x: number,
     y: number,
-    alpha: number
+    _alpha: number
   ): void {
     ctx.fillStyle = effect.data.color
     ctx.strokeStyle = '#000000'
@@ -169,7 +169,7 @@ export class EffectSystem {
     effect: HitFlashEffect,
     x: number,
     y: number,
-    alpha: number
+    _alpha: number
   ): void {
     ctx.fillStyle = effect.data.color
     ctx.beginPath()
@@ -182,7 +182,7 @@ export class EffectSystem {
     effect: LevelUpEffect,
     x: number,
     y: number,
-    alpha: number
+    _alpha: number
   ): void {
     // 外側のリング
     ctx.strokeStyle = '#fbbf24'
