@@ -1,0 +1,19 @@
+# 開発用Dockerfile
+FROM golang:1.22-alpine
+
+WORKDIR /app
+
+# 開発ツールのインストール
+RUN apk add --no-cache git gcc musl-dev
+
+# Go modulesを有効化
+ENV GO111MODULE=on
+
+# エントリーポイントスクリプトをコピー
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 8080
+
+# エントリーポイントスクリプトで起動
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,0 +1,43 @@
+{
+  "mcpServers": {
+    "serena": {
+      "tools": [
+        "*"
+      ],
+      "type": "local",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server"
+      ]
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": "npx",
+      "tools": [
+        "*"
+      ],
+      "args": [
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "playwright": {
+                "command": "npx",
+                "args": [
+                    "@playwright/mcp@latest"
+                ]
+            },
+            "awslabs.aws-documentation-mcp-server": {
+                "command": "uvx",
+                "args": ["awslabs.aws-documentation-mcp-server@latest"],
+                "env": {
+                    "FASTMCP_LOG_LEVEL": "ERROR",
+                    "AWS_DOCUMENTATION_PARTITION": "aws"
+                },
+                "disabled": false,
+                "autoApprove": []
+            }
+  }
+}

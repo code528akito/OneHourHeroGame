@@ -1,0 +1,13 @@
+{
+    "kiroAgent.configureMCP": "Disabled",
+    "go.useLanguageServer": true,
+"gopls": {
+    "formatting.gofumpt": true
+},
+"go.lintTool": "golangci-lint",
+"go.lintFlags": [
+  "--config=${workspaceFolder}/.golangci.yaml",
+  "--fast"
+],
+
+}
