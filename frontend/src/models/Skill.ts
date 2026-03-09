@@ -5,6 +5,8 @@ export enum SkillType {
   THUNDERBOLT = 'THUNDERBOLT',
   FIRST_STRIKE = 'FIRST_STRIKE',
   WIND_WALK = 'WIND_WALK',
+  PIERCING_ARROW = 'PIERCING_ARROW',
+  ARROW_RAIN = 'ARROW_RAIN',
 }
 
 export interface SkillData {
@@ -97,6 +99,27 @@ export class SkillSystem {
       duration: 10,
       classType: 'THIEF',
       color: '#06b6d4',
+    })
+
+    // 弓使いのスキル
+    this.skillData.set(SkillType.PIERCING_ARROW, {
+      type: SkillType.PIERCING_ARROW,
+      name: 'ピアシングアロー',
+      description: '最も近い敵に遠距離160ダメージ',
+      cooldown: 6,
+      duration: 0,
+      classType: 'ARCHER',
+      color: '#f59e0b',
+    })
+
+    this.skillData.set(SkillType.ARROW_RAIN, {
+      type: SkillType.ARROW_RAIN,
+      name: 'アローレイン',
+      description: '遠距離の敵3体に120ダメージ',
+      cooldown: 14,
+      duration: 0,
+      classType: 'ARCHER',
+      color: '#84cc16',
     })
   }
 

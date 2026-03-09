@@ -79,6 +79,24 @@ export default function ClassSelectionPage() {
       color: 'bg-green-600 hover:bg-green-700',
       unlocked: true,
     },
+    {
+      id: 'ARCHER',
+      name: '弓使い',
+      description: '超高火力の遠距離クラス。低速かつ低防御なので位置取りが重要。',
+      stats: {
+        hp: '★★☆☆☆',
+        attack: '★★★★★',
+        defense: '★☆☆☆☆',
+        speed: '★☆☆☆☆',
+      },
+      skills: [
+        { name: 'ピアシングアロー', description: '最も近い敵に遠距離160ダメージ' },
+        { name: 'アローレイン', description: '遠距離の敵3体に120ダメージ' },
+      ],
+      difficulty: '上級',
+      color: 'bg-amber-600 hover:bg-amber-700',
+      unlocked: true,
+    },
   ]
 
   const handleClassSelect = (classId: string) => {
@@ -104,7 +122,7 @@ export default function ClassSelectionPage() {
           <p className="text-gray-400">あなたのプレイスタイルに合ったクラスを選びましょう</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
           {classes.map((classInfo) => (
             <div
               key={classInfo.id}

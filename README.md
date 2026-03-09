@@ -119,6 +119,7 @@ make shell-db              # PostgreSQLシェルに入る
 - **騎士**: バランス型の初期クラス
 - **魔法使い**: 高火力、低防御 (クリア後解放)
 - **盗賊**: 高速、低防御 (クリア後解放)
+- **弓使い**: 超高火力、遠距離、低速、低防御
 
 ### スコアリング
 
@@ -148,7 +149,7 @@ make shell-db              # PostgreSQLシェルに入る
 ### 機能仕様
 
 - [ゲームメカニクス](docs/features/game-mechanics.md) - ゲームの基本システム
-- [クラスシステム](docs/features/class-system.md) - 3つのプレイアブルクラス
+- [クラスシステム](docs/features/class-system.md) - 4つのプレイアブルクラス
 - [モンスターシステム](docs/features/monster-system.md) - モンスターとAI（作成予定）
 - [マップシステム](docs/features/map-system.md) - 5つのエリア（作成予定）
 

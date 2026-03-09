@@ -9,6 +9,18 @@ import { Monster } from '@/models/Monster'
 import { ItemType, EquipmentType } from '@/models/Item'
 import { NPC, Monument } from '@/models/NPC'
 
+export function selectNearestLivingMonsters(
+  monsters: Monster[],
+  position: { x: number; y: number },
+  range: number,
+  maxTargets: number
+): Monster[] {
+  return monsters
+    .filter(monster => monster.isMonsterAlive() && monster.distanceTo(position) <= range)
+    .sort((left, right) => left.distanceTo(position) - right.distanceTo(position))
+    .slice(0, maxTargets)
+}
+
 export class GameEngine {
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
@@ -83,9 +95,9 @@ export class GameEngine {
       this.handleSkillUsed(skillType)
     }
     
-    // 魔法攻撃コールバックを設定
-    this.player.onMagicAttack = (skillType: string, position: { x: number; y: number }) => {
-      this.handleMagicAttack(skillType, position)
+    // 即時発動の遠距離攻撃コールバックを設定
+    this.player.onSpecialAttack = (skillType: string, position: { x: number; y: number }) => {
+      this.handleSpecialAttack(skillType, position)
     }
     
     this.spawnMonsters()
@@ -122,16 +134,22 @@ export class GameEngine {
       case 'FIRST_STRIKE':
         this.effectSystem.addSkillAura(playerPos, '#8b5cf6', 0.5)
         break
+      case 'PIERCING_ARROW':
+        this.effectSystem.addSkillAura(playerPos, '#f59e0b', 0.6)
+        break
+      case 'ARROW_RAIN':
+        this.effectSystem.addSkillAura(playerPos, '#84cc16', 0.8)
+        break
     }
   }
 
-  private handleMagicAttack(skillType: string, position: { x: number; y: number }): void {
+  private handleSpecialAttack(skillType: string, position: { x: number; y: number }): void {
     if (!this.player) return
 
     let damage = 0
     let range = 0
 
-    // スキル別のダメージと範囲
+    // 魔法使いの範囲攻撃
     switch (skillType) {
       case 'FIREBALL':
         damage = 100
@@ -145,6 +163,14 @@ export class GameEngine {
         // サンダーボルトは広範囲攻撃なので、より大きなエフェクトを表示
         this.effectSystem.addSkillAura(position, '#fbbf24', 0.5)
         break
+      case 'PIERCING_ARROW':
+        this.handleArcherAttack(position, 160, 280, 1, '#f59e0b')
+        return
+      case 'ARROW_RAIN':
+        this.handleArcherAttack(position, 120, 320, 3, '#84cc16')
+        return
+      default:
+        return
     }
 
     // 範囲内のモンスターにダメージ
@@ -168,7 +194,42 @@ export class GameEngine {
       }
     })
 
-    console.log(`Magic attack ${skillType}: ${damage} damage in ${range} range`)
+    console.log(`Special attack ${skillType}: ${damage} damage in ${range} range`)
+  }
+
+  private handleArcherAttack(
+    position: { x: number; y: number },
+    damage: number,
+    range: number,
+    maxTargets: number,
+    effectColor: string
+  ): void {
+    if (!this.player) return
+
+    const targets = selectNearestLivingMonsters(this.monsters, position, range, maxTargets)
+
+    targets.forEach(monster => {
+      const monsterPos = monster.getPosition()
+      monster.takeDamage(damage)
+
+      this.effectSystem.addDamageText(monsterPos, damage, true)
+      this.effectSystem.addHitFlash(monsterPos, false)
+      this.effectSystem.addSkillAura(monsterPos, effectColor, 0.35)
+
+      if (!monster.isMonsterAlive()) {
+        const monsterStats = monster.getStats()
+        const leveledUp = this.player!.addExp(monsterStats.exp)
+        this.monstersDefeated++
+
+        if (leveledUp) {
+          this.effectSystem.addLevelUpEffect(position)
+        }
+      }
+    })
+
+    console.log(
+      `Archer attack: ${damage} damage to ${targets.length} target(s) within ${range} range`
+    )
   }
 
   private spawnMonsters(): void {
