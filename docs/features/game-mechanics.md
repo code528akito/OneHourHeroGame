@@ -274,7 +274,15 @@ function useMagicAttack(skillType: string, position: Vector2) {
 ### 遠距離射撃（弓使い）
 
 ```typescript
-function useArcherAttack(position: Vector2) {
+function usePiercingArrow(position: Vector2) {
+  const target = findNearestEnemy(position, 280)
+  if (target) {
+    target.takeDamage(160)
+    showHitFlash(target.position)
+  }
+}
+
+function useArrowRain(position: Vector2) {
   const targets = monsters
     .filter(monster => distance(monster, position) <= 320)
     .sort(byNearestTo(position))
@@ -284,6 +292,14 @@ function useArcherAttack(position: Vector2) {
     monster.takeDamage(120)
     showHitFlash(monster.position)
   })
+}
+
+function updateArcherAutoAttack(position: Vector2) {
+  const target = findNearestEnemy(position, 260)
+  if (target) {
+    target.takeDamage(player.getAttackPower())
+    showHitFlash(target.position)
+  }
 }
 ```
 
