@@ -9,7 +9,22 @@ import { Monster } from '@/models/Monster'
 import { ItemType, EquipmentType } from '@/models/Item'
 import { NPC, Monument } from '@/models/NPC'
 
+export function selectNearestLivingMonsters(
+  monsters: Monster[],
+  position: { x: number; y: number },
+  range: number,
+  maxTargets: number
+): Monster[] {
+  return monsters
+    .filter(monster => monster.isMonsterAlive() && monster.distanceTo(position) <= range)
+    .sort((left, right) => left.distanceTo(position) - right.distanceTo(position))
+    .slice(0, maxTargets)
+}
+
 export class GameEngine {
+  private static readonly ARCHER_AUTO_ATTACK_RANGE = 260
+  private static readonly ARCHER_AUTO_ATTACK_COOLDOWN = 0.75
+
   private canvas: HTMLCanvasElement
   private ctx: CanvasRenderingContext2D
   private stateManager: GameStateManager
@@ -23,6 +38,7 @@ export class GameEngine {
   private lastFrameTime: number = 0
   private animationFrameId: number | null = null
   private timeMode: TimeMode | null = null
+  private archerAttackCooldown: number = 0
 
   // ゲーム統計
   private monstersDefeated: number = 0
@@ -68,6 +84,7 @@ export class GameEngine {
     this.timeMode = timeMode
     this.monstersDefeated = 0
     this.itemsCollected = 0
+    this.archerAttackCooldown = 0
     
     this.mapSystem = new MapSystem(50, 50, 32)
     const worldSize = this.mapSystem.getWorldSize()
@@ -83,9 +100,9 @@ export class GameEngine {
       this.handleSkillUsed(skillType)
     }
     
-    // 魔法攻撃コールバックを設定
-    this.player.onMagicAttack = (skillType: string, position: { x: number; y: number }) => {
-      this.handleMagicAttack(skillType, position)
+    // 即時発動の遠距離攻撃コールバックを設定
+    this.player.onSpecialAttack = (skillType: string, position: { x: number; y: number }) => {
+      this.handleSpecialAttack(skillType, position)
     }
     
     this.spawnMonsters()
@@ -122,16 +139,22 @@ export class GameEngine {
       case 'FIRST_STRIKE':
         this.effectSystem.addSkillAura(playerPos, '#8b5cf6', 0.5)
         break
+      case 'PIERCING_ARROW':
+        this.effectSystem.addSkillAura(playerPos, '#f59e0b', 0.6)
+        break
+      case 'ARROW_RAIN':
+        this.effectSystem.addSkillAura(playerPos, '#84cc16', 0.8)
+        break
     }
   }
 
-  private handleMagicAttack(skillType: string, position: { x: number; y: number }): void {
+  private handleSpecialAttack(skillType: string, position: { x: number; y: number }): void {
     if (!this.player) return
 
     let damage = 0
     let range = 0
 
-    // スキル別のダメージと範囲
+    // 魔法使いの範囲攻撃
     switch (skillType) {
       case 'FIREBALL':
         damage = 100
@@ -145,6 +168,14 @@ export class GameEngine {
         // サンダーボルトは広範囲攻撃なので、より大きなエフェクトを表示
         this.effectSystem.addSkillAura(position, '#fbbf24', 0.5)
         break
+      case 'PIERCING_ARROW':
+        this.handleArcherAttack(position, 160, 280, 1, '#f59e0b')
+        return
+      case 'ARROW_RAIN':
+        this.handleArcherAttack(position, 120, 320, 3, '#84cc16')
+        return
+      default:
+        return
     }
 
     // 範囲内のモンスターにダメージ
@@ -168,7 +199,79 @@ export class GameEngine {
       }
     })
 
-    console.log(`Magic attack ${skillType}: ${damage} damage in ${range} range`)
+    console.log(`Special attack ${skillType}: ${damage} damage in ${range} range`)
+  }
+
+  private handleArcherAttack(
+    position: { x: number; y: number },
+    damage: number,
+    range: number,
+    maxTargets: number,
+    effectColor: string
+  ): void {
+    if (!this.player) return
+
+    const targets = selectNearestLivingMonsters(this.monsters, position, range, maxTargets)
+
+    targets.forEach(monster => {
+      const monsterPos = monster.getPosition()
+      monster.takeDamage(damage)
+
+      this.effectSystem.addDamageText(monsterPos, damage, true)
+      this.effectSystem.addHitFlash(monsterPos, false)
+      this.effectSystem.addSkillAura(monsterPos, effectColor, 0.35)
+
+      if (!monster.isMonsterAlive()) {
+        const monsterStats = monster.getStats()
+        const leveledUp = this.player!.addExp(monsterStats.exp)
+        this.monstersDefeated++
+
+        if (leveledUp) {
+          this.effectSystem.addLevelUpEffect(position)
+        }
+      }
+    })
+
+    console.log(
+      `Archer attack: ${damage} damage to ${targets.length} target(s) within ${range} range`
+    )
+  }
+
+  private updateArcherAutoAttack(deltaTime: number): void {
+    if (!this.player || this.player.getClassType() !== 'ARCHER') return
+
+    this.archerAttackCooldown = Math.max(0, this.archerAttackCooldown - deltaTime)
+    if (this.archerAttackCooldown > 0) return
+
+    const playerPos = this.player.getPosition()
+    const target = selectNearestLivingMonsters(
+      this.monsters,
+      playerPos,
+      GameEngine.ARCHER_AUTO_ATTACK_RANGE,
+      1
+    )[0]
+
+    if (!target) return
+
+    const attackPower = this.player.getAttackPower()
+    const targetPos = target.getPosition()
+    target.takeDamage(attackPower)
+
+    this.effectSystem.addDamageText(targetPos, attackPower)
+    this.effectSystem.addHitFlash(targetPos, false)
+    this.effectSystem.addSkillAura(targetPos, '#f59e0b', 0.25)
+
+    if (!target.isMonsterAlive()) {
+      const monsterStats = target.getStats()
+      const leveledUp = this.player.addExp(monsterStats.exp)
+      this.monstersDefeated++
+
+      if (leveledUp) {
+        this.effectSystem.addLevelUpEffect(playerPos)
+      }
+    }
+
+    this.archerAttackCooldown = GameEngine.ARCHER_AUTO_ATTACK_COOLDOWN
   }
 
   private spawnMonsters(): void {
@@ -223,6 +326,7 @@ export class GameEngine {
           monster.update(deltaTime, playerPos)
         })
 
+        this.updateArcherAutoAttack(deltaTime)
         this.checkCollisions()
       }
     }
@@ -305,23 +409,25 @@ export class GameEngine {
         // ダメージエフェクトを表示
         this.effectSystem.addDamageText(playerPos, playerDamage)
         this.effectSystem.addHitFlash(playerPos, true)
-        
-        // モンスターがダメージを受ける
-        const attackPower = this.player!.getAttackPower()
-        monster.takeDamage(attackPower)
-        
-        // モンスターのダメージエフェクト
-        this.effectSystem.addDamageText(monsterPos, attackPower)
-        this.effectSystem.addHitFlash(monsterPos, false)
 
-        if (!monster.isMonsterAlive()) {
-          const leveledUp = this.player!.addExp(monsterStats.exp)
-          this.monstersDefeated++
-          
-          // レベルアップエフェクト
-          if (leveledUp) {
-            console.log('Level up!')
-            this.effectSystem.addLevelUpEffect(playerPos)
+        if (this.player!.getClassType() !== 'ARCHER') {
+          // モンスターがダメージを受ける
+          const attackPower = this.player!.getAttackPower()
+          monster.takeDamage(attackPower)
+
+          // モンスターのダメージエフェクト
+          this.effectSystem.addDamageText(monsterPos, attackPower)
+          this.effectSystem.addHitFlash(monsterPos, false)
+
+          if (!monster.isMonsterAlive()) {
+            const leveledUp = this.player!.addExp(monsterStats.exp)
+            this.monstersDefeated++
+
+            // レベルアップエフェクト
+            if (leveledUp) {
+              console.log('Level up!')
+              this.effectSystem.addLevelUpEffect(playerPos)
+            }
           }
         }
 

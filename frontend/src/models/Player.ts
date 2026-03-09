@@ -34,7 +34,7 @@ export class Player {
 
   // コールバック
   public onSkillUsed?: (skillType: string) => void
-  public onMagicAttack?: (skillType: string, position: Vector2) => void
+  public onSpecialAttack?: (skillType: string, position: Vector2) => void
 
   constructor(classType: string) {
     this.classType = classType
@@ -78,6 +78,16 @@ export class Player {
           attack: 12,
           defense: 3,
         }
+      case 'ARCHER':
+        return {
+          level: 1,
+          hp: 60,
+          maxHp: 60,
+          exp: 0,
+          maxExp: 100,
+          attack: 18,
+          defense: 1,
+        }
       default:
         return {
           level: 1,
@@ -99,6 +109,8 @@ export class Player {
         return 120 // 遅い
       case 'THIEF':
         return 180 // 速い
+      case 'ARCHER':
+        return 100 // 遅い
       default:
         return 150
     }
@@ -284,10 +296,15 @@ export class Player {
     if (this.skillSystem.useSkill(type)) {
       console.log(`Used skill: ${type}`)
       
-      // 即時効果のスキル（魔法攻撃）
-      if (type === SkillType.FIREBALL || type === SkillType.THUNDERBOLT) {
-        if (this.onMagicAttack) {
-          this.onMagicAttack(type, this.position)
+      // 即時効果のスキル（遠距離攻撃）
+      if (
+        type === SkillType.FIREBALL ||
+        type === SkillType.THUNDERBOLT ||
+        type === SkillType.PIERCING_ARROW ||
+        type === SkillType.ARROW_RAIN
+      ) {
+        if (this.onSpecialAttack) {
+          this.onSpecialAttack(type, this.position)
         }
       }
       

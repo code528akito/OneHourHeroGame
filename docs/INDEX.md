@@ -52,7 +52,7 @@
 
 2. [class-system.md](features/class-system.md)
    - クラスシステム
-   - 騎士・魔法使い・盗賊
+   - 騎士・魔法使い・盗賊・弓使い
    - スキル詳細
    - クラス比較
 
@@ -70,7 +70,7 @@
 
 5. [skill-system.md](features/skill-system.md)
    - スキルシステム
-   - 6種類のスキル
+   - 8種類のスキル
    - クールダウン管理
    - スキル効果
 

@@ -184,6 +184,7 @@ if (isWalkable(newX, newY)) {
 | 騎士 | 150 | 標準 |
 | 魔法使い | 120 | 遅い（-20%） |
 | 盗賊 | 180 | 速い（+20%） |
+| 弓使い | 100 | 最も遅い（-33%） |
 
 ### スキル効果
 
@@ -267,6 +268,38 @@ function useMagicAttack(skillType: string, position: Vector2) {
       showExplosion(position, range)
     }
   })
+}
+```
+
+### 遠距離射撃（弓使い）
+
+```typescript
+function usePiercingArrow(position: Vector2) {
+  const target = findNearestEnemy(position, 280)
+  if (target) {
+    target.takeDamage(160)
+    showHitFlash(target.position)
+  }
+}
+
+function useArrowRain(position: Vector2) {
+  const targets = monsters
+    .filter(monster => distance(monster, position) <= 320)
+    .sort(byNearestTo(position))
+    .slice(0, 3)
+
+  targets.forEach(monster => {
+    monster.takeDamage(120)
+    showHitFlash(monster.position)
+  })
+}
+
+function updateArcherAutoAttack(position: Vector2) {
+  const target = findNearestEnemy(position, 260)
+  if (target) {
+    target.takeDamage(player.getAttackPower())
+    showHitFlash(target.position)
+  }
 }
 ```
 

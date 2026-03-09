@@ -64,10 +64,10 @@ docs/
 
 ### 🎮 ゲーム仕様を理解する
 1. [ゲームメカニクス](features/game-mechanics.md) - ゲームの基本システム
-2. [クラスシステム](features/class-system.md) - 3つのプレイアブルクラス
+2. [クラスシステム](features/class-system.md) - 4つのプレイアブルクラス
 3. [モンスターシステム](features/monster-system.md) - 11種類のモンスター
 4. [マップシステム](features/map-system.md) - 5つのエリア
-5. [スキルシステム](features/skill-system.md) - 6種類のスキル
+5. [スキルシステム](features/skill-system.md) - 8種類のスキル
 6. [アイテムシステム](features/item-system.md) - アイテムと装備
 
 ### 🔧 実装を理解する

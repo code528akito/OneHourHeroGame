@@ -19,6 +19,7 @@ export enum ClassType {
   KNIGHT = 'KNIGHT',
   MAGE = 'MAGE',
   THIEF = 'THIEF',
+  ARCHER = 'ARCHER',
 }
 
 export enum ScoreRank {
